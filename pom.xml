@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>patient-service</module>
+        <module>billing-service</module>
     </modules>
 
     <properties>
