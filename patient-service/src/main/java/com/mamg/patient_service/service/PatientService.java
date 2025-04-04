@@ -5,6 +5,7 @@ import com.mamg.patient_service.dto.PatientResponseDTO;
 import com.mamg.patient_service.exception.EmailAlreadyExistsException;
 import com.mamg.patient_service.exception.PatientNotFoundException;
 import com.mamg.patient_service.grpc.BillingServiceGrpcClient;
+import com.mamg.patient_service.kafka.KafkaProducer;
 import com.mamg.patient_service.mapper.PatientMapper;
 import com.mamg.patient_service.model.Patient;
 import com.mamg.patient_service.repository.PatientRepository;
@@ -18,10 +19,14 @@ import java.util.UUID;
 public class PatientService {
     private final PatientRepository patientRepository;
     private final BillingServiceGrpcClient billingServiceGrpcClient;
+    private final KafkaProducer kafkaProducer;
 
-    public PatientService(PatientRepository patientRepository, BillingServiceGrpcClient billingServiceGrpcClient) {
+    public PatientService(PatientRepository patientRepository,
+                          BillingServiceGrpcClient billingServiceGrpcClient,
+                          KafkaProducer kafkaProducer) {
         this.patientRepository = patientRepository;
         this.billingServiceGrpcClient = billingServiceGrpcClient;
+        this.kafkaProducer = kafkaProducer;
     }
 
     public List<PatientResponseDTO> getPatients() {
@@ -30,15 +35,19 @@ public class PatientService {
     }
 
     public PatientResponseDTO createPatient(PatientRequestDTO patientRequestDTO) {
-        //an email address must be unique
+        //An email address must be unique
         if (patientRepository.existsByEmail(patientRequestDTO.getEmail())) {
             throw new EmailAlreadyExistsException("A patient with this email already exists: " + patientRequestDTO.getEmail());
         }
 
         Patient newPatient = patientRepository.save(PatientMapper.toModel(patientRequestDTO));
 
+        //Sends a gRPC request to the billing-service to create a new billing account
         billingServiceGrpcClient.createBillingAccount(newPatient.getId().toString(),
                 newPatient.getName(), newPatient.getEmail());
+
+        //Sends a kafka event to the patient topic
+        kafkaProducer.sendEvent(newPatient);
 
         return PatientMapper.toDTO(newPatient);
     }
