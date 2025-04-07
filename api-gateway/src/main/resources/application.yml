@@ -1,10 +1,18 @@
 server:
-  port: 4004
+  port: 4004 # Gateway listens on port 4004
 
 spring:
   cloud:
     gateway:
       routes:
+        # Route for /auth/** to auth-service
+        - id: auth-service-route
+          uri: http://auth-service:4005
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=1
+
         # Route for /api/patients/** to patient-service
         - id: patient-service-route
           uri: http://patient-service:4000
@@ -20,3 +28,4 @@ spring:
             - Path=/api-docs/patients
           filters:
             - RewritePath=/api-docs/patients, /v3/api-docs
+
