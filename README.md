@@ -16,6 +16,24 @@ A microservices-based RESTful API built with **Spring Boot**, designed for manag
 
 ## 🧱 Architecture Overview
 
+This project follows a **microservices architecture**, with communication between services done using multiple protocols for efficiency and scalability:
+
+- **HTTP REST** via Spring Cloud Gateway for client-to-service communication.
+- **gRPC** for internal communication between microservices (e.g., Patient → Billing Service).
+- **Apache Kafka** for asynchronous, event-driven communication (e.g., Patient → Analytics Service).
+
+### 🔄 Communication Flow
+
+- The **Frontend** makes HTTP requests through the **API Gateway** (`localhost:4000`) which routes to internal services.
+- The **Patient Service** sends asynchronous events to **Analytics Service** via **Kafka**.
+- It also communicates synchronously with the **Billing Service** using **gRPC** with Protocol Buffers.
+
+### 📊 System Diagram
+
+![Architecture Diagram](./B71635FB-B479-43ED-8763-D23C4E6C6FCF.png)
+
+### 📖 Microservices summary
+
 The system is composed of several independent microservices:
 
 - **api-gateway**: Routes requests to the appropriate microservices.
