@@ -28,10 +28,6 @@ This project follows a **microservices architecture**, with communication betwee
 - The **Patient Service** sends asynchronous events to **Analytics Service** via **Kafka**.
 - It also communicates synchronously with the **Billing Service** using **gRPC** with Protocol Buffers.
 
-### 📊 System Diagram
-
-![Architecture Diagram](./B71635FB-B479-43ED-8763-D23C4E6C6FCF.png)
-
 ### 📖 Microservices summary
 
 The system is composed of several independent microservices:
