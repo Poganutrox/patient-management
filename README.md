@@ -50,4 +50,4 @@ The system is composed of several independent microservices:
 2. Launch all containers:
 
    ```bash
-   docker-compose up --build
+   docker compose up --build
