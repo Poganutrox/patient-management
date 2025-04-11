@@ -47,3 +47,7 @@ The system is composed of several independent microservices:
    ```bash
    git clone https://github.com/Poganutrox/patient-management.git
    cd patient-management
+2. Launch all containers:
+
+   ```bash
+   docker-compose up --build
